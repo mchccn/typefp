@@ -3,7 +3,11 @@
     "version": "1.0.0",
     "description": "TypeScript type creation made easier with a functional programming domain-specific language.",
     "main": "dist/index.js",
-    "scripts": {},
+    "bin": "dist/bin.js",
+    "scripts": {
+        "watch": "tsc -w",
+        "build": "tsc"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/cursorsdottsx/typefp.git"
@@ -15,9 +19,13 @@
         "url": "https://github.com/cursorsdottsx/typefp/issues"
     },
     "homepage": "https://github.com/cursorsdottsx/typefp#readme",
-    "dependencies": {},
+    "dependencies": {
+        "chokidar": "^3.5.2",
+        "yargs": "^17.0.1"
+    },
     "devDependencies": {
         "@types/node": "^16.3.2",
+        "@types/yargs": "^17.0.2",
         "tslib": "^2.3.0",
         "typescript": "^4.3.5"
     }
