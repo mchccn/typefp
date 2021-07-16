@@ -1,3 +1,4 @@
 import compile from "./compile";
+import parse from "./parse";
 
-export { compile };
+export { compile, parse };

@@ -74,6 +74,7 @@ export default function cli() {
 
             if (!existsSync(path)) {
                 console.error("Configuration file not found");
+
                 process.exit(1);
             }
 
@@ -116,7 +117,9 @@ export default function cli() {
             });
 
             if (files) {
-                const output = (await Promise.all(files.map((file) => compile(file)))).join("\n\n");
+                if (!files.length) return console.log("No input files found");
+
+                const output = (await Promise.all(files.map((file) => compile(file)))).join("\n\n").trim();
 
                 await writeFile(out, output, "utf8");
 
@@ -130,13 +133,13 @@ export default function cli() {
 
         const watcher = chokidar.watch(directory);
 
-        watcher.on("ready", () =>
+        return watcher.on("ready", () =>
             watcher
                 .on("all", (event, path) => (!path.endsWith(extension) && !event.toLowerCase().endsWith("dir") ? void 0 : build(true)))
                 .on("error", (error) => (!options.shutup ? console.log("Error watching files:", error) : void 0))
         );
     })().catch((error) => {
-        console.log("Error compiling:", error);
+        console.log("Error compiling:", error.message);
 
         process.exit(1);
     });

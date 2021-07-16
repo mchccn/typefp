@@ -6,7 +6,8 @@
     "bin": "dist/bin.js",
     "scripts": {
         "watch": "tsc -w",
-        "build": "tsc"
+        "build": "tsc",
+        "ne": "chokidar src/core/typefp.ne --command \"nearleyc src/core/typefp.ne --out src/core/typefp.ts && prettier --write src/core/typefp.ts\""
     },
     "repository": {
         "type": "git",
@@ -21,9 +22,13 @@
     "homepage": "https://github.com/cursorsdottsx/typefp#readme",
     "dependencies": {
         "chokidar": "^3.5.2",
+        "common-tags": "^1.8.0",
+        "nearley": "^2.20.1",
         "yargs": "^17.0.1"
     },
     "devDependencies": {
+        "@types/common-tags": "^1.8.1",
+        "@types/nearley": "^2.11.2",
         "@types/node": "^16.3.2",
         "@types/yargs": "^17.0.2",
         "tslib": "^2.3.0",
