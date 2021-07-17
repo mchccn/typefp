@@ -5,7 +5,7 @@
 function id(d: any[]): any {
   return d[0];
 }
-
+import params from "./params";
 interface NearleyToken {
   value: any;
   [key: string]: any;
@@ -66,6 +66,87 @@ const grammar: Grammar = {
       },
     },
     { name: "wschar", symbols: [/[ \t\n\v\f]/], postprocess: id },
+    { name: "dqstring$ebnf$1", symbols: [] },
+    {
+      name: "dqstring$ebnf$1",
+      symbols: ["dqstring$ebnf$1", "dstrchar"],
+      postprocess: (d) => d[0].concat([d[1]]),
+    },
+    {
+      name: "dqstring",
+      symbols: [{ literal: '"' }, "dqstring$ebnf$1", { literal: '"' }],
+      postprocess: function (d) {
+        return d[1].join("");
+      },
+    },
+    { name: "sqstring$ebnf$1", symbols: [] },
+    {
+      name: "sqstring$ebnf$1",
+      symbols: ["sqstring$ebnf$1", "sstrchar"],
+      postprocess: (d) => d[0].concat([d[1]]),
+    },
+    {
+      name: "sqstring",
+      symbols: [{ literal: "'" }, "sqstring$ebnf$1", { literal: "'" }],
+      postprocess: function (d) {
+        return d[1].join("");
+      },
+    },
+    { name: "btstring$ebnf$1", symbols: [] },
+    {
+      name: "btstring$ebnf$1",
+      symbols: ["btstring$ebnf$1", /[^`]/],
+      postprocess: (d) => d[0].concat([d[1]]),
+    },
+    {
+      name: "btstring",
+      symbols: [{ literal: "`" }, "btstring$ebnf$1", { literal: "`" }],
+      postprocess: function (d) {
+        return d[1].join("");
+      },
+    },
+    { name: "dstrchar", symbols: [/[^\\"\n]/], postprocess: id },
+    {
+      name: "dstrchar",
+      symbols: [{ literal: "\\" }, "strescape"],
+      postprocess: function (d) {
+        return JSON.parse('"' + d.join("") + '"');
+      },
+    },
+    { name: "sstrchar", symbols: [/[^\\'\n]/], postprocess: id },
+    {
+      name: "sstrchar",
+      symbols: [{ literal: "\\" }, "strescape"],
+      postprocess: function (d) {
+        return JSON.parse('"' + d.join("") + '"');
+      },
+    },
+    {
+      name: "sstrchar$string$1",
+      symbols: [{ literal: "\\" }, { literal: "'" }],
+      postprocess: (d) => d.join(""),
+    },
+    {
+      name: "sstrchar",
+      symbols: ["sstrchar$string$1"],
+      postprocess: function (d) {
+        return "'";
+      },
+    },
+    { name: "strescape", symbols: [/["\\/bfnrt]/], postprocess: id },
+    {
+      name: "strescape",
+      symbols: [
+        { literal: "u" },
+        /[a-fA-F0-9]/,
+        /[a-fA-F0-9]/,
+        /[a-fA-F0-9]/,
+        /[a-fA-F0-9]/,
+      ],
+      postprocess: function (d) {
+        return d.join("");
+      },
+    },
     {
       name: "main",
       symbols: ["statements", "statement"],
@@ -150,50 +231,140 @@ const grammar: Grammar = {
       }),
     },
     {
-      name: "define$string$1",
+      name: "define$subexpression$1$string$1",
       symbols: [
+        { literal: "e" },
+        { literal: "x" },
         { literal: "d" },
         { literal: "e" },
         { literal: "f" },
-        { literal: "i" },
-        { literal: "n" },
+      ],
+      postprocess: (d) => d.join(""),
+    },
+    {
+      name: "define$subexpression$1",
+      symbols: ["define$subexpression$1$string$1"],
+    },
+    {
+      name: "define$subexpression$1$string$2",
+      symbols: [{ literal: "d" }, { literal: "e" }, { literal: "f" }],
+      postprocess: (d) => d.join(""),
+    },
+    {
+      name: "define$subexpression$1",
+      symbols: ["define$subexpression$1$string$2"],
+    },
+    { name: "define$subexpression$2", symbols: ["empty"] },
+    {
+      name: "define$subexpression$2$macrocall$2",
+      symbols: ["extended_identifier"],
+    },
+    { name: "define$subexpression$2$macrocall$1$ebnf$1", symbols: [] },
+    {
+      name: "define$subexpression$2$macrocall$1$ebnf$1",
+      symbols: ["define$subexpression$2$macrocall$1$ebnf$1", /./],
+      postprocess: (d) => d[0].concat([d[1]]),
+    },
+    {
+      name: "define$subexpression$2$macrocall$1",
+      symbols: ["define$subexpression$2$macrocall$1$ebnf$1"],
+      postprocess: (data) => ({ type: "list", data: params(data) }),
+    },
+    {
+      name: "define$subexpression$2",
+      symbols: [
+        "_",
+        { literal: "(" },
+        "_",
+        "define$subexpression$2$macrocall$1",
+        "_",
+        { literal: ")" },
+      ],
+    },
+    { name: "define$subexpression$3", symbols: ["return"] },
+    { name: "define$subexpression$3", symbols: ["__", "if"] },
+    {
+      name: "define",
+      symbols: [
+        "define$subexpression$1",
+        "__",
+        "identifier",
+        "define$subexpression$2",
+        { literal: "\n" },
+        "define$subexpression$3",
+      ],
+      postprocess: (data) => ({
+        type: "define",
+        exported: data[0][0].startsWith("ex"),
+        name: data[2],
+        params: data[3].slice(1 + 1, -1)[1],
+        body: data[5].filter(($) => $ !== null),
+      }),
+    },
+    {
+      name: "if$string$1",
+      symbols: [{ literal: "i" }, { literal: "f" }],
+      postprocess: (d) => d.join(""),
+    },
+    { name: "if$subexpression$1", symbols: ["return"] },
+    { name: "if$subexpression$1", symbols: ["__", "if"] },
+    { name: "if$ebnf$1", symbols: ["else"], postprocess: id },
+    { name: "if$ebnf$1", symbols: [], postprocess: () => null },
+    {
+      name: "if",
+      symbols: [
+        "if$string$1",
+        "_",
+        { literal: "(" },
+        "_",
+        "is",
+        "_",
+        { literal: ")" },
+        { literal: "\n" },
+        "if$subexpression$1",
+        "_",
+        "if$ebnf$1",
+      ],
+      postprocess: (data) => ({
+        type: "if",
+        condition: data[4],
+        body: data[8],
+        else: data[10],
+      }),
+    },
+    {
+      name: "is$string$1",
+      symbols: [{ literal: "i" }, { literal: "s" }],
+      postprocess: (d) => d.join(""),
+    },
+    {
+      name: "is",
+      symbols: ["identifier", "__", "is$string$1", "__", "value"],
+      postprocess: (data) => ({
+        type: "is",
+        identifier: data[0],
+        value: data[4],
+      }),
+    },
+    {
+      name: "else$string$1",
+      symbols: [
+        { literal: "e" },
+        { literal: "l" },
+        { literal: "s" },
         { literal: "e" },
       ],
       postprocess: (d) => d.join(""),
     },
-    { name: "define$subexpression$1", symbols: ["empty"] },
+    { name: "else$subexpression$1", symbols: ["return"] },
+    { name: "else$subexpression$1", symbols: ["__", "if"] },
     {
-      name: "define$subexpression$1$macrocall$2",
-      symbols: ["extended_identifier"],
+      name: "else",
+      symbols: ["else$string$1", { literal: "\n" }, "else$subexpression$1"],
+      postprocess: (data) => ({ type: "else", data: data[2][0] }),
     },
     {
-      name: "define$subexpression$1$macrocall$1$ebnf$1",
-      symbols: ["define$subexpression$1$macrocall$2"],
-      postprocess: id,
-    },
-    {
-      name: "define$subexpression$1$macrocall$1$ebnf$1",
-      symbols: [],
-      postprocess: () => null,
-    },
-    {
-      name: "define$subexpression$1$macrocall$1",
-      symbols: ["define$subexpression$1$macrocall$1$ebnf$1"],
-      postprocess: (data) => ({ type: "list", data: data[0] }),
-    },
-    {
-      name: "define$subexpression$1",
-      symbols: [
-        "__",
-        { literal: "<" },
-        "_",
-        "define$subexpression$1$macrocall$1",
-        "_",
-        { literal: ">" },
-      ],
-    },
-    {
-      name: "define$string$2",
+      name: "return$string$1",
       symbols: [
         { literal: "r" },
         { literal: "e" },
@@ -204,30 +375,32 @@ const grammar: Grammar = {
       ],
       postprocess: (d) => d.join(""),
     },
-    { name: "define$ebnf$1", symbols: [/[^\n\t\v]/] },
     {
-      name: "define$ebnf$1",
-      symbols: ["define$ebnf$1", /[^\n\t\v]/],
+      name: "return",
+      symbols: [
+        "__",
+        "return$string$1",
+        "__",
+        "value",
+        { literal: "\n" },
+        "empty",
+      ],
+      postprocess: (data) => ({ type: "return", data: data[3] }),
+    },
+    { name: "value$ebnf$1", symbols: [/[^\n\t\v]/] },
+    {
+      name: "value$ebnf$1",
+      symbols: ["value$ebnf$1", /[^\n\t\v]/],
       postprocess: (d) => d[0].concat([d[1]]),
     },
+    { name: "value$ebnf$2", symbols: [{ literal: "," }], postprocess: id },
+    { name: "value$ebnf$2", symbols: [], postprocess: () => null },
     {
-      name: "define",
-      symbols: [
-        "define$string$1",
-        "__",
-        "identifier",
-        "define$subexpression$1",
-        { literal: "\n" },
-        "__",
-        "define$string$2",
-        "__",
-        "define$ebnf$1",
-      ],
+      name: "value",
+      symbols: ["value$ebnf$1", "value$ebnf$2"],
       postprocess: (data) => ({
-        type: "define",
-        name: data[2],
-        params: data[3].slice(1 + 1, -1)[1],
-        return: data[8].flat(Infinity).join(""),
+        type: "value",
+        data: data.flat(Infinity).join("").trim(),
       }),
     },
     { name: "comment$ebnf$1", symbols: [] },

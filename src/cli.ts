@@ -139,7 +139,7 @@ export default function cli() {
                 .on("error", (error) => (!options.shutup ? console.log("Error watching files:", error) : void 0))
         );
     })().catch((error) => {
-        console.log("Error compiling:", error.message);
+        console.log("Error compiling:", error);
 
         process.exit(1);
     });

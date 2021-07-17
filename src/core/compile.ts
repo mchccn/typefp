@@ -1,5 +1,4 @@
 import { readFile } from "fs/promises";
-import { inspect } from "util";
 import parse from "./parse";
 import { ParseData } from "./types";
 
@@ -37,14 +36,18 @@ export default async function compile(file: string) {
                         return `//${$.data.raw.trimStart().slice(1)}`;
                     }
 
-                    console.log(inspect($, false, Infinity, true));
-
                     if ($.data.type === "define") {
-                        return `type ${$.data.name.name}${
+                        return `${$.data.exported ? "export " : ""}type ${$.data.name.name}${
                             $.data.params && $.data.params.data.length
                                 ? "<" + $.data.params.data.map((p) => `${p.name}${p.data ? " extends " + p.data.data : ""}`).join(", ") + ">"
                                 : ""
-                        } = ${$.data.return};`; // ! fix
+                        } = ${(function resolve([body]): string {
+                            if (body.type === "return") return body.data.data;
+
+                            return `${body.condition.identifier.name} extends ${body.condition.value.data} ? ${resolve(body.body)} : ${
+                                body.else ? resolve([body.else.data]) : "never"
+                            }`;
+                        })($.data.body)};`;
                     }
                 }
             }
