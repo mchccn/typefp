@@ -1,5 +1,7 @@
 @preprocessor typescript
 @builtin "whitespace.ne"
+@builtin "string.ne"
+@builtin "number.ne"
 
 @{% import params from "./params"; %}
 
