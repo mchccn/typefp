@@ -23,7 +23,7 @@ extends -> ":" empty [^ \n\t\v<>]:+ {% (data) => ({ type: "extends", data: data[
 define ->
         ("exdef" | "def") __ identifier (empty | _ "(" _ LIST[extended_identifier] _ ")") "\n"
         (return | __ if)
-        {% (data) => ({ type: "define", exported: data[0][0].startsWith("ex"), name: data[2], params: data[3].slice(1 + 1, -1)[1], body: data[5].filter(($) => $ !== null) }) %}
+        {% (data) => ({ type: "define", exported: data[0][0].startsWith("ex"), name: data[2], params: data[3].slice(1 + 1, -1)[1], body: data[5].filter(($: any) => $ !== null) }) %}
 
 if ->
         "if" _ "(" _ is _ ")" "\n"

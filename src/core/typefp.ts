@@ -298,7 +298,7 @@ const grammar: Grammar = {
         exported: data[0][0].startsWith("ex"),
         name: data[2],
         params: data[3].slice(1 + 1, -1)[1],
-        body: data[5].filter(($) => $ !== null),
+        body: data[5].filter(($: any) => $ !== null),
       }),
     },
     {
