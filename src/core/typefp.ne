@@ -1,12 +1,9 @@
 @preprocessor typescript
 @builtin "whitespace.ne"
-@builtin "string.ne"
 
 @{% import params from "./params"; %}
 
 main -> statements statement {% ([statements, statement]) => [...statements.flat(Infinity), statement] %}
-
-ending_statement -> statement {% (data) => data %}
 
 statements -> (statement newline):* {% (data) => data %}    
 
@@ -22,12 +19,12 @@ extends -> ":" empty [^ \n\t\v<>]:+ {% (data) => ({ type: "extends", data: data[
 
 define ->
         ("exdef" | "def") __ identifier (empty | _ "(" _ LIST[extended_identifier] _ ")") "\n"
-        (return | __ if)
+        (__ return | __ if)
         {% (data) => ({ type: "define", exported: data[0][0].startsWith("ex"), name: data[2], params: data[3].slice(1 + 1, -1)[1], body: data[5].filter(($: any) => $ !== null) }) %}
 
 if ->
         "if" _ "(" _ is _ ")" "\n"
-        (return | __ if)
+        (__ return | __ if)
         _ else:?
         {% (data) => ({ type: "if", condition: data[4], body: data[8], else: data[10] }) %}
 
@@ -35,8 +32,8 @@ is -> identifier __ "is" __ value {% (data) => ({ type: "is", identifier: data[0
 
 else ->
         "else" "\n"
-        (return | __ if)
-        {% (data) => ({ type: "else", data: data[2][0] }) %}
+        (__ return | __ if)
+        {% (data) => ({ type: "else", data: data[2][1] }) %}
 
 return -> __ "return" __ value "\n" empty {% (data) => ({ type: "return", data: data[3] }) %}
 

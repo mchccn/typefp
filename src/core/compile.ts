@@ -1,11 +1,13 @@
 import { readFile } from "fs/promises";
+import { ParseData } from ".";
 import parse from "./parse";
-import { ParseData } from "./types";
 
 export default async function compile(file: string) {
     const content = await readFile(file, "utf8");
 
     const [raw] = parse(content) as any[][];
+
+    if (!raw) return "";
 
     const parsed = raw.filter(($) => $ !== null) as ParseData[];
 

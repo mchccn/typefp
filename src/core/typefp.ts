@@ -66,87 +66,6 @@ const grammar: Grammar = {
       },
     },
     { name: "wschar", symbols: [/[ \t\n\v\f]/], postprocess: id },
-    { name: "dqstring$ebnf$1", symbols: [] },
-    {
-      name: "dqstring$ebnf$1",
-      symbols: ["dqstring$ebnf$1", "dstrchar"],
-      postprocess: (d) => d[0].concat([d[1]]),
-    },
-    {
-      name: "dqstring",
-      symbols: [{ literal: '"' }, "dqstring$ebnf$1", { literal: '"' }],
-      postprocess: function (d) {
-        return d[1].join("");
-      },
-    },
-    { name: "sqstring$ebnf$1", symbols: [] },
-    {
-      name: "sqstring$ebnf$1",
-      symbols: ["sqstring$ebnf$1", "sstrchar"],
-      postprocess: (d) => d[0].concat([d[1]]),
-    },
-    {
-      name: "sqstring",
-      symbols: [{ literal: "'" }, "sqstring$ebnf$1", { literal: "'" }],
-      postprocess: function (d) {
-        return d[1].join("");
-      },
-    },
-    { name: "btstring$ebnf$1", symbols: [] },
-    {
-      name: "btstring$ebnf$1",
-      symbols: ["btstring$ebnf$1", /[^`]/],
-      postprocess: (d) => d[0].concat([d[1]]),
-    },
-    {
-      name: "btstring",
-      symbols: [{ literal: "`" }, "btstring$ebnf$1", { literal: "`" }],
-      postprocess: function (d) {
-        return d[1].join("");
-      },
-    },
-    { name: "dstrchar", symbols: [/[^\\"\n]/], postprocess: id },
-    {
-      name: "dstrchar",
-      symbols: [{ literal: "\\" }, "strescape"],
-      postprocess: function (d) {
-        return JSON.parse('"' + d.join("") + '"');
-      },
-    },
-    { name: "sstrchar", symbols: [/[^\\'\n]/], postprocess: id },
-    {
-      name: "sstrchar",
-      symbols: [{ literal: "\\" }, "strescape"],
-      postprocess: function (d) {
-        return JSON.parse('"' + d.join("") + '"');
-      },
-    },
-    {
-      name: "sstrchar$string$1",
-      symbols: [{ literal: "\\" }, { literal: "'" }],
-      postprocess: (d) => d.join(""),
-    },
-    {
-      name: "sstrchar",
-      symbols: ["sstrchar$string$1"],
-      postprocess: function (d) {
-        return "'";
-      },
-    },
-    { name: "strescape", symbols: [/["\\/bfnrt]/], postprocess: id },
-    {
-      name: "strescape",
-      symbols: [
-        { literal: "u" },
-        /[a-fA-F0-9]/,
-        /[a-fA-F0-9]/,
-        /[a-fA-F0-9]/,
-        /[a-fA-F0-9]/,
-      ],
-      postprocess: function (d) {
-        return d.join("");
-      },
-    },
     {
       name: "main",
       symbols: ["statements", "statement"],
@@ -154,11 +73,6 @@ const grammar: Grammar = {
         ...statements.flat(Infinity),
         statement,
       ],
-    },
-    {
-      name: "ending_statement",
-      symbols: ["statement"],
-      postprocess: (data) => data,
     },
     { name: "statements$ebnf$1", symbols: [] },
     {
@@ -281,7 +195,7 @@ const grammar: Grammar = {
         { literal: ")" },
       ],
     },
-    { name: "define$subexpression$3", symbols: ["return"] },
+    { name: "define$subexpression$3", symbols: ["__", "return"] },
     { name: "define$subexpression$3", symbols: ["__", "if"] },
     {
       name: "define",
@@ -306,7 +220,7 @@ const grammar: Grammar = {
       symbols: [{ literal: "i" }, { literal: "f" }],
       postprocess: (d) => d.join(""),
     },
-    { name: "if$subexpression$1", symbols: ["return"] },
+    { name: "if$subexpression$1", symbols: ["__", "return"] },
     { name: "if$subexpression$1", symbols: ["__", "if"] },
     { name: "if$ebnf$1", symbols: ["else"], postprocess: id },
     { name: "if$ebnf$1", symbols: [], postprocess: () => null },
@@ -356,12 +270,12 @@ const grammar: Grammar = {
       ],
       postprocess: (d) => d.join(""),
     },
-    { name: "else$subexpression$1", symbols: ["return"] },
+    { name: "else$subexpression$1", symbols: ["__", "return"] },
     { name: "else$subexpression$1", symbols: ["__", "if"] },
     {
       name: "else",
       symbols: ["else$string$1", { literal: "\n" }, "else$subexpression$1"],
-      postprocess: (data) => ({ type: "else", data: data[2][0] }),
+      postprocess: (data) => ({ type: "else", data: data[2][1] }),
     },
     {
       name: "return$string$1",

@@ -1,0 +1,11 @@
+def NumericChar()
+    return "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+exdef IsNumber(S: string)
+    if (S is `${NumericChar}`)
+        return true
+    else
+        if (S is `${NumericChar}${infer Rest}`)
+            return IsNumber<Rest>
+        else
+            return false
