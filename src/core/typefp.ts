@@ -5,6 +5,27 @@
 function id(d: any[]): any {
   return d[0];
 }
+
+// Bypasses TS6133. Allow declared but unused functions.
+// @ts-ignore
+function nth(n) {
+  return function (d) {
+    return d[n];
+  };
+}
+
+// Bypasses TS6133. Allow declared but unused functions.
+// @ts-ignore
+function $(o) {
+  return function (d) {
+    var ret = {};
+    Object.keys(o).forEach(function (k) {
+      ret[k] = d[o[k]];
+    });
+    return ret;
+  };
+}
+
 import params from "./params";
 interface NearleyToken {
   value: any;
@@ -331,6 +352,18 @@ const grammar: Grammar = {
         );
       },
     },
+    {
+      name: "cow$string$1",
+      symbols: [{ literal: "M" }, { literal: "O" }],
+      postprocess: (d) => d.join(""),
+    },
+    { name: "cow$ebnf$1", symbols: [{ literal: "O" }] },
+    {
+      name: "cow$ebnf$1",
+      symbols: ["cow$ebnf$1", { literal: "O" }],
+      postprocess: (d) => d[0].concat([d[1]]),
+    },
+    { name: "cow", symbols: ["cow$string$1", "cow$ebnf$1"] },
     {
       name: "main",
       symbols: ["statements", "statement"],

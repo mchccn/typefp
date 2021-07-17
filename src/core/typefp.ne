@@ -1,7 +1,9 @@
 @preprocessor typescript
+@builtin "postprocessors.ne"
 @builtin "whitespace.ne"
 @builtin "string.ne"
 @builtin "number.ne"
+@builtin "cow.ne"
 
 @{% import params from "./params"; %}
 
