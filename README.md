@@ -8,7 +8,7 @@ _/      _/    _/  _/    _/  _/          _/      _/    _/
        _/_/    _/                            _/
 ```
 
-# typefp
+# [typefp](https://github.com/cursorsdottsx/typefp/)
 
 ###### presented by cursorsdottsx
 
@@ -38,6 +38,8 @@ You can also add it globally to use the CLI:
 ```
 $ npm install typefp --global
 ```
+
+In VSCode, you can also install the [extension](https://marketplace.visualstudio.com/items?itemName=cursorsdottsx.typefp) for DSL support.
 
 #### use it programmatically
 
