@@ -1,0 +1,106 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "typefp",
+    "patterns": [
+        { "include": "#comments" },
+        { "include": "#keywords" },
+        { "include": "#strings" },
+        { "include": "#numbers" },
+        { "include": "#booleans" },
+        { "include": "#types" },
+        { "include": "#text" }
+    ],
+    "repository": {
+        "comments": {
+            "name": "comment.line.typefp",
+            "patterns": [
+                {
+                    "name": "comment.line.typefp",
+                    "match": "^\\s*#.*"
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.typefp",
+                    "match": "\\b(def|exdef|return|if|else|is|infer)\\b"
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.typefp",
+                    "begin": "\"",
+                    "end": "\"",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.typefp",
+                            "match": "\\\\."
+                        }
+                    ]
+                },
+                {
+                    "name": "string.quoted.single",
+                    "begin": "'",
+                    "end": "'",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.typefp",
+                            "match": "\\\\."
+                        }
+                    ]
+                },
+                {
+                    "name": "string.quoted.other.typefp",
+                    "begin": "`|\\}",
+                    "end": "`|\\$\\{",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.typefp",
+                            "match": "\\\\."
+                        }
+                    ]
+                }
+            ]
+        },
+        "numbers": {
+            "name": "constant.numeric.typefp",
+            "patterns": [
+                {
+                    "name": "constant.numeric.typefp",
+                    "match": "\\b\\d+(\\.\\d+)?(e-?\\d+)?\\b"
+                }
+            ]
+        },
+        "booleans": {
+            "name": "constant.language.boolean.typefp",
+            "patterns": [
+                {
+                    "name": "constant.language.boolean.typefp",
+                    "match": "\\b(true|false)\\b"
+                }
+            ]
+        },
+        "types": {
+            "name": "entity.name.class",
+            "patterns": [
+                {
+                    "name": "entity.name.class",
+                    "match": "\\b(number|string|boolean|void|never|undefined|null)\\b"
+                }
+            ]
+        },
+        "text": {
+            "name": "variable.name",
+            "patterns": [
+                {
+                    "name": "variable.name",
+                    "match": "[^()\\[\\]{}<>.,|&:+-]"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.typefp"
+}

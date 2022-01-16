@@ -1,0 +1,44 @@
+{
+    "name": "typefp",
+    "displayName": "typefp",
+    "description": "typefp typescript tooling dsl support",
+    "publisher": "cursorsdottsx",
+    "version": "1.1.1",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cursorsdottsx/typefp.git"
+    },
+    "bugs": {
+        "url": "https://github.com/cursorsdottsx/typefp/issues"
+    },
+    "homepage": "https://github.com/cursorsdottsx/typefp#readme",
+    "engines": {
+        "vscode": "^1.58.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "icon": "icon.png",
+    "contributes": {
+        "languages": [
+            {
+                "id": "typefp",
+                "aliases": [
+                    "typefp",
+                    "typefp"
+                ],
+                "extensions": [
+                    ".typefp"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "typefp",
+                "scopeName": "source.typefp",
+                "path": "./syntaxes/typefp.tmlanguage.json"
+            }
+        ]
+    }
+}
