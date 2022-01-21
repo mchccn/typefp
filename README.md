@@ -15,7 +15,7 @@ _/      _/    _/  _/    _/  _/          _/      _/    _/
 > TypeScript type creation made easier with a functional programming domain-specific language.
 
 TypeScript's type system was always extremely powerful but intimidating.
-New users would find themself stuck at the gates of conditional types and struggle to understand how to create their very own types.
+New users would find themselves stuck at the gates of conditional types and struggle to understand how to create their very own types.
 
 **No more, for typefp is here!**
 
